@@ -1,0 +1,73 @@
+== https://github.com/ShivamShrirao/diffusers/tree/main/examples/dreambooth ==
+ 
+* Make a place for downloads
+mkdir Downloads
+cd Downloads
+ 
+* Download & Install Anaconda
+wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
+chmod +x ./Anaconda3-2022.05-Linux-x86_64.sh
+./Anaconda3-2022.05-Linux-x86_64.sh
+ 
+* Nvidia CUDA toolkit for Ubuntu WSL - https://developer.nvidia.com/cuda-downloads
+wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda-repo-wsl-ubuntu-11-7-local_11.7.1-1_amd64.deb
+sudo dpkg -i cuda-repo-wsl-ubuntu-11-7-local_11.7.1-1_amd64.deb
+sudo cp /var/cuda-repo-wsl-ubuntu-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get -y install cuda
+ 
+* New shell with Anaconda & install g++
+bash
+sudo apt install build-essential
+ 
+* New virtual Python environment
+conda update -n base -c defaults conda
+conda create --name diffusers python=3.9
+conda activate diffusers
+ 
+* Make a directory for all your github downloads, then download diffusers
+mkdir ~/github
+cd ~/github
+git clone https://github.com/ShivamShrirao/diffusers.git
+cd diffusers
+ 
+* Install required packages
+pip install .
+cd examples/dreambooth
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+pip install -r requirements.txt
+pip install -U --pre triton
+pip install ninja bitsandbytes
+pip install git+https://github.com/facebookresearch/xformers@1d31a3a#egg=xformers
+ 
+* Configure / login
+accelerate config
+huggingface-cli login
+mkdir -p training
+mkdir -p classes
+explorer.exe .
+ 
+* Edit your training file and add this line to the top or reboot:
+export LD_LIBRARY_PATH=/usr/lib/wsl/lib:$LD_LIBRARY_PATH
+ 
+* Copy your training file from your Windows desktop (or wherever you saved it):
+cp /mnt/c/Users/YOUR_USERNAME/Desktop/my_training.sh ./
+chmod +x ./my_training.sh
+./my_training.sh
+ 
+ 
+* NB: If you get an error like this - 
+403 Client Error: Forbidden for url: https://huggingface.co/CompVis/stable-diffusion-v1-4/resolve/main/model_index.json
+ 
+Then:
+Make sure you've visited https://huggingface.co/CompVis/stable-diffusion-v1-4 and accepted the licence!
+NB. If this is the very first time you've used diffusers, it's about a 6GB download
+ 
+To train again next time, simply:
+ 
+* Start Ubuntu, then:
+conda activate diffusers
+cd ~/github/diffusers/examples/dreambooth
+./my_training.sh
